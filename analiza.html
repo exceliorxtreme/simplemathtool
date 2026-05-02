@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Calculator Analiză Matematică — Terminal Dark</title>
+<script>
+window.MathJax = {
+  chtml: { scale: 1.15 },
+  tex: {
+    inlineMath: [['$', '$'], ['\\(', '\\)']],
+    displayMath: [['$$', '$$'], ['\\[', '\\]']]
+  },
+  options: { skipHtmlTags: ['script', 'noscript', 'style', 'textarea', 'pre'] }
+};
+</script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js" async></script>
+<style>
+:root {
+  --bg: #0a0c0a; --card-bg: #111411; --text: #e0ffe0; --text-muted: #7caa7c;
+  --accent: #00ff41; --accent-dark: #008f25; --accent-glow: rgba(0, 255, 65, 0.25);
+  --border: #2a332a; --input-bg: #0d100d; --input-border: #3a453a;
+  --hover-bg: #1a1f1a; --font-main: 'Consolas', 'Fira Code', 'Segoe UI', monospace;
+}
+* { box-sizing: border-box; }
+body {
+  font-family: var(--font-main); background-color: var(--bg); color: var(--text);
+  display: flex; justify-content: center; align-items: flex-start;
+  min-height: 100vh; margin: 0; padding: 30px 10px;
+  background-image: radial-gradient(var(--border) 1px, transparent 1px);
+  background-size: 20px 20px;
+}
+.container {
+  background: var(--card-bg); padding: 2rem; border-radius: 12px;
+  box-shadow: 0 0 25px var(--accent-glow), 0 10px 40px rgba(0,0,0,0.7);
+  width: 100%; max-width: 720px; border: 1px solid var(--accent-dark);
+}
+/* ── TABS ── */
+.tabs { display: flex; margin-bottom: 20px; border-bottom: 2px solid var(--border); flex-wrap: wrap; gap: 2px; }
+.tab {
+  flex: 1 1 23%; /* ~4 pe rând, cu spațiu pentru gap */
+  min-width: 0;
+  padding: 10px 4px;
+  text-align: center;
+  cursor: pointer;
+  font-weight: bold;
+  font-size: 0.72rem;
+  color: var(--text-muted);
+  transition: 0.2s;
+  white-space: nowrap;
+  border-bottom: 2px solid transparent;
+}
+.tab.active { color: var(--accent); border-bottom-color: var(--accent); text-shadow: 0 0 6px var(--accent-glow); }
+.tab:hover:not(.active) { color: #fff; background: var(--hover-bg); border-radius: 4px 4px 0 0; }
+.content-section { display: none; animation: fadeIn 0.3s ease; }
+.content-section.active { display: block; }
+@keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+/* ── GENERAL ── */
+h2 { color: var(--accent); text-align: center; margin-top: 0; text-shadow: 0 0 8px var(--accent-glow); letter-spacing: 1px; }
+.description { text-align: center; font-size: 0.88rem; color: var(--text-muted); margin-bottom: 20px; }
+.input-group { margin-bottom: 15px; }
+label { display: block; margin-bottom: 5px; color: var(--text); font-weight: 600; font-size: 0.85rem; }
+input, select {
+  width: 100%; padding: 10px; background: var(--input-bg); border: 2px solid var(--input-border);
+  border-radius: 6px; font-size: 0.95rem; color: var(--text); transition: 0.2s; font-family: inherit;
+}
+input:focus, select:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 8px var(--accent-glow); }
+button { padding: 10px 14px; border: 1px solid var(--accent-dark); border-radius: 6px; font-size: 0.9rem; font-weight: bold; cursor: pointer; transition: 0.2s; color: #000; background: var(--accent); text-transform: uppercase; letter-spacing: 0.5px; }
+button:hover { transform: translateY(-2px); filter: brightness(1.15); }
+button:active { transform: translateY(0); }
+/* ── TABLES ── */
+.table-wrap { margin-top: 15px; max-height: 420px; overflow-y: auto; border-radius: 6px; border: 1px solid var(--border); background: var(--input-bg); }
+table { width: 100%; border-collapse: collapse; font-size: 0.88rem; }
+thead th { background: var(--accent-dark); color: #000; padding: 8px 10px; text-align: center; position: sticky; top: 0; z-index: 2; font-weight: 800; }
+tbody tr:nth-child(even) { background: rgba(0, 255, 65, 0.03); }
+tbody td { padding: 7px 10px; text-align: center; border-bottom: 1px solid var(--border); vertical-align: middle; }
+.badge { display: inline-block; padding: 2px 8px; border-radius: 10px; font-size: 0.75rem; background: rgba(0, 255, 65, 0.15); color: var(--accent); font-weight: 600; border: 1px solid var(--accent-dark); }
+/* ── GRAPH ── */
+.graph-box { background: #050605; border: 1px solid var(--accent-dark); border-radius: 8px; padding: 10px; margin-top: 15px; position: relative; }
+#plotCanvas { width: 100%; height: 320px; display: block; background: #000; border-radius: 4px; }
+.graph-controls { display: flex; gap: 10px; margin-bottom: 10px; align-items: center; flex-wrap: wrap; }
+.graph-controls select, .graph-controls input { flex: 1; min-width: 140px; }
+.graph-controls button { flex: 0 0 auto; }
+.graph-legend { font-size: 0.82rem; color: var(--text-muted); margin-top: 8px; text-align: center; }
+/* ── CARDS & FORMULE ── */
+.fsec-title { display: flex; align-items: center; gap: 8px; background: linear-gradient(90deg, var(--accent-dark), #004d18); color: #000; padding: 8px 14px; border-radius: 6px; font-weight: bold; font-size: 0.85rem; margin: 18px 0 10px; letter-spacing: 0.5px; }
+.fcards { display: grid; gap: 10px; }
+.fcard { background: var(--hover-bg); border: 1px solid var(--border); border-radius: 6px; overflow: hidden; }
+.fcard-head { background: rgba(0, 255, 65, 0.08); color: var(--accent); font-weight: bold; padding: 6px 12px; font-size: 0.82rem; border-bottom: 1px solid var(--accent-dark); }
+.fcard-body { padding: 8px 14px; }
+.fline { display: flex; align-items: center; padding: 5px 0; border-bottom: 1px dashed var(--border); font-size: 0.88rem; gap: 6px; flex-wrap: wrap; }
+.fline:last-child { border-bottom: none; }
+.fn { color: #b388ff; font-weight: 600; min-width: 100px; font-size: 0.82rem; flex-shrink: 0; }
+.scroll-x { overflow-x: auto; border-radius: 6px; border: 1px solid var(--border); background: var(--input-bg); }
+/* Scrollbars */
+.table-wrap::-webkit-scrollbar, .scroll-x::-webkit-scrollbar { height: 6px; width: 6px; }
+.table-wrap::-webkit-scrollbar-thumb, .scroll-x::-webkit-scrollbar-thumb { background: var(--accent-dark); border-radius: 3px; }
+/* ── PRINT / PDF OPTIMIZATION ── */
+@media print {
+  @page { margin: 1.5cm; size: A4; }
+  body {
+    background: #fff !important; color: #000 !important;
+    padding: 0 !important; margin: 0 !important; font-size: 11pt !important;
+    -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important;
+  }
+  .container {
+    box-shadow: none !important; border: none !important;
+    max-width: 100% !important; padding: 0 !important; background: transparent !important;
+  }
+  .tabs, button, .input-group, .graph-controls, .graph-box, .result-box,
+  .description, .note-red, .graph-legend, .graph-legend * { display: none !important; }
+
+  .content-section {
+    display: block !important; page-break-inside: avoid;
+    margin-bottom: 20pt; border-bottom: 1px solid #ccc; padding-bottom: 15pt;
+  }
+  h2, .fsec-title {
+    color: #000 !important; background: #eee !important;
+    border-radius: 4pt !important; margin-top: 0 !important;
+  }
+  .fund-box, .fcard, .table-wrap {
+    background: #fff !important; border: 1px solid #ccc !important;
+    overflow: visible !important; max-height: none !important;
+  }
+  table, th, td { border: 1px solid #999 !important; color: #000 !important; }
+  th { background: #f5f5f5 !important; color: #000 !important; }
+  .fcards { display: block !important; }
+  .fcard { margin-bottom: 10pt; break-inside: avoid; }
+
+  /* 🔑 FIX CRITIC PENTRU MATHJAX LA PRINT */
+  mjx-container { visibility: visible !important; display: inline-block !important; color: #000 !important; }
+  .fline, .fund-row, .fcard-body { border-color: #ddd !important; color: #000 !important; }
+  .fn, .fund-no { color: #000 !important; }
+  .badge { border: 1px solid #999 !important; color: #333 !important; background: #f0f0f0 !important; }
+}
+</style>
+</head>
+<body>
+<div class="container">
+<div class="tabs">
+  <div class="tab active" onclick="openTab(event,'deriv')">Derivate</div>
+  <div class="tab" onclick="openTab(event,'grafice')">Grafice</div>
+  <div class="tab" onclick="openTab(event,'inversetrig')">Inverse Trig</div>
+  <div class="tab" onclick="openTab(event,'hiperb')">Hiperbolice</div>
+  <div class="tab" onclick="openTab(event,'reguli')">Reguli Derivare</div>
+  <div class="tab" onclick="openTab(event,'dersup')">Der. Superioare</div>
+  <div class="tab" onclick="openTab(event,'taylor')">Serii Taylor</div>
+
+</div>
+
+<!-- ═══ DERIVATE ═══ -->
+<div id="deriv" class="content-section active">
+  <h2>Tabel Derivate & Domenii</h2>
+  <div class="description">Funcții uzuale, domenii de definiție și condiții de derivabilitate.</div>
+  <div class="table-wrap">
+  <table>
+    <thead><tr><th>\(f(x)\)</th><th>\(D_f\)</th><th>Condiții</th><th>\(f'(x)\)</th></tr></thead>
+    <tbody>
+      <tr><td>\(C\)</td><td>\(\mathbb{R}\)</td><td>—</td><td>\(0\)</td></tr>
+      <tr><td>\(x^n\)</td><td>\(\mathbb{R}\)</td><td>\(n\in\mathbb{N}^*\)</td><td>\(nx^{n-1}\)</td></tr>
+      <tr><td>\(\dfrac{1}{x}\)</td><td>\(\mathbb{R}^*\)</td><td>\(x\neq0\)</td><td>\(-\dfrac{1}{x^2}\)</td></tr>
+      <tr><td>\(\sqrt{x}\)</td><td>\([0,\infty)\)</td><td>\(x>0\)</td><td>\(\dfrac{1}{2\sqrt{x}}\)</td></tr>
+      <tr><td>\(e^x\)</td><td>\(\mathbb{R}\)</td><td>—</td><td>\(e^x\)</td></tr>
+      <tr><td>\(a^x\)</td><td>\(\mathbb{R}\)</td><td>\(a>0,\ a\neq1\)</td><td>\(a^x\ln a\)</td></tr>
+      <tr><td>\(\ln x\)</td><td>\((0,\infty)\)</td><td>\(x>0\)</td><td>\(\dfrac{1}{x}\)</td></tr>
+      <tr><td>\(\log_a x\)</td><td>\((0,\infty)\)</td><td>\(x>0,\ a>0,\ a\neq1\)</td><td>\(\dfrac{1}{x\ln a}\)</td></tr>
+      <tr><td>\(\sin x\)</td><td>\(\mathbb{R}\)</td><td>—</td><td>\(\cos x\)</td></tr>
+      <tr><td>\(\cos x\)</td><td>\(\mathbb{R}\)</td><td>—</td><td>\(-\sin x\)</td></tr>
+      <tr><td>\(\operatorname{tg}x\)</td><td>\(\mathbb{R}\setminus\{\frac{\pi}{2}+k\pi\}\)</td><td>\(x\neq\frac{\pi}{2}+k\pi\)</td><td>\(\dfrac{1}{\cos^2x}\)</td></tr>
+      <tr><td>\(\operatorname{ctg}x\)</td><td>\(\mathbb{R}\setminus\{k\pi\}\)</td><td>\(x\neq k\pi\)</td><td>\(-\dfrac{1}{\sin^2x}\)</td></tr>
+      <tr><td>\(\arcsin x\)</td><td>\([-1,1]\)</td><td>\(x \in (-1,1)\)</td><td>\(\dfrac{1}{\sqrt{1-x^2}}\)</td></tr>
+  <tr><td>\(\arccos x\)</td><td>\([-1,1]\)</td><td>\(x \in (-1,1)\)</td><td>\(-\dfrac{1}{\sqrt{1-x^2}}\)</td></tr>
+  <tr><td>\(\operatorname{arctg} x\)</td><td>\(\mathbb{R}\)</td><td>—</td><td>\(\dfrac{1}{1+x^2}\)</td></tr>
+  <tr><td>\(\operatorname{arcctg} x\)</td><td>\(\mathbb{R}\)</td><td>—</td><td>\(-\dfrac{1}{1+x^2}\)</td></tr>
+    </tbody>
+
+  </table>
+  </div>
+</div>
+
+<!-- ═══ GRAFICE ═══ -->
+<div id="grafice" class="content-section">
+  <h2>Plotter Funcții</h2>
+  <div class="description">Desenează graficul pe \([-6,\ 6]\) cu scalare automată pe Y.</div>
+  <div class="graph-controls">
+  <select id="funcSelect">
+  <option value="sin">y = sin(x)</option>
+  <option value="cos">y = cos(x)</option>
+  <option value="tan">y = tg(x)</option>
+  <option value="cot">y = ctg(x)</option>
+  <option value="exp">y = eˣ</option>
+  <option value="ln">y = ln(x)</option>
+  <option value="sqrt">y = √x</option>
+  <option value="abs">y = |x|</option>
+  <option value="sinh">y = sinh(x)</option>
+  <option value="cosh">y = cosh(x)</option>
+</select>
+    <button class="btn-primary" onclick="drawGraph()">Desenează</button>
+  </div>
+  <div class="graph-box"><canvas id="plotCanvas"></canvas></div>
+  <div class="graph-legend" id="graphLabel">Selectează o funcție și apasă „Desenează"</div>
+</div>
+<!-- ═══ INVERSE TRIG ═══ -->
+<div id="inversetrig" class="content-section">
+  <h2>Funcții Trigonometrice Inverse</h2>
+  <div class="description">Definiții, domenii, imagini și derivate.</div>
+  <div class="table-wrap">
+  <table>
+    <thead><tr><th>Funcție</th><th>\(D_f\)</th><th>\(\operatorname{Im}_f\)</th><th>\(f'(x)\)</th><th>Identitate</th></tr></thead>
+    <tbody>
+      <tr><td>\(\arcsin x\)</td><td>\([-1,1]\)</td><td>\([-\frac{\pi}{2},\frac{\pi}{2}]\)</td><td>\(\dfrac{1}{\sqrt{1-x^2}}\)</td><td>\(\sin(\arcsin x)=x\)</td></tr>
+      <tr><td>\(\arccos x\)</td><td>\([-1,1]\)</td><td>\([0,\pi]\)</td><td>\(-\dfrac{1}{\sqrt{1-x^2}}\)</td><td>\(\cos(\arccos x)=x\)</td></tr>
+      <tr><td>\(\operatorname{arctg}x\)</td><td>\(\mathbb{R}\)</td><td>\((-\frac{\pi}{2},\frac{\pi}{2})\)</td><td>\(\dfrac{1}{1+x^2}\)</td><td>\(\operatorname{tg}(\operatorname{arctg}x)=x\)</td></tr>
+      <tr><td>\(\operatorname{arcctg}x\)</td><td>\(\mathbb{R}\)</td><td>\((0,\pi)\)</td><td>\(-\dfrac{1}{1+x^2}\)</td><td>\(\operatorname{ctg}(\operatorname{arcctg}x)=x\)</td></tr>
+    </tbody>
+  </table>
+  </div>
+  <div class="fsec-title">🔗 Relații & Proprietăți</div>
+  <div class="fcards">
+    <div class="fcard"><div class="fcard-body">
+      <div class="fline"><span class="fn">\(\arcsin x+\arccos x=\)</span> \(\dfrac{\pi}{2}\)</div>
+      <div class="fline"><span class="fn">\(\operatorname{arctg}x+\operatorname{arcctg}x=\)</span> \(\dfrac{\pi}{2}\)</div>
+      <div class="fline"><span class="fn">\(\operatorname{arctg}(-x)=\)</span> \(-\operatorname{arctg}x\) (impară)</div>
+      <div class="fline"><span class="fn">\(\arccos(-x)=\)</span> \(\pi-\arccos x\)</div>
+    </div></div>
+  </div>
+</div>
+
+<!-- ═══ HIPERBOLICE ═══ -->
+<div id="hiperb" class="content-section">
+  <h2>Funcții Hiperbolice & Inverse</h2>
+  <div class="description">Definiții exponențiale, domenii și derivate.</div>
+  <div class="fsec-title">📐 Definiții & Derivate</div>
+  <div class="table-wrap">
+  <table>
+    <thead><tr><th>Funcție</th><th>Definiție</th><th>\(D_f\)</th><th>\(f'(x)\)</th></tr></thead>
+    <tbody>
+      <tr><td>\(\sinh x\)</td><td>\(\dfrac{e^x-e^{-x}}{2}\)</td><td>\(\mathbb{R}\)</td><td>\(\cosh x\)</td></tr>
+      <tr><td>\(\cosh x\)</td><td>\(\dfrac{e^x+e^{-x}}{2}\)</td><td>\(\mathbb{R}\)</td><td>\(\sinh x\)</td></tr>
+      <tr><td>\(\tanh x\)</td><td>\(\dfrac{\sinh x}{\cosh x}\)</td><td>\(\mathbb{R}\)</td><td>\(\dfrac{1}{\cosh^2x}\)</td></tr>
+      <tr><td>\(\coth x\)</td><td>\(\dfrac{\cosh x}{\sinh x}\)</td><td>\(\mathbb{R}^*\)</td><td>\(-\dfrac{1}{\sinh^2x}\)</td></tr>
+    </tbody>
+  </table>
+  </div>
+  <div class="fsec-title">🔄 Inverse Hiperbolice (Logaritmice)</div>
+  <div class="table-wrap">
+  <table>
+    <thead><tr><th>Funcție</th><th>Formă Logaritmică</th><th>\(D_f\)</th><th>\(f'(x)\)</th></tr></thead>
+    <tbody>
+      <tr><td>\(\operatorname{arsinh}x\)</td><td>\(\ln(x+\sqrt{x^2+1})\)</td><td>\(\mathbb{R}\)</td><td>\(\dfrac{1}{\sqrt{x^2+1}}\)</td></tr>
+      <tr><td>\(\operatorname{arcosh}x\)</td><td>\(\ln(x+\sqrt{x^2-1})\)</td><td>\([1,\infty)\)</td><td>\(\dfrac{1}{\sqrt{x^2-1}}\)</td></tr>
+      <tr><td>\(\operatorname{artanh}x\)</td><td>\(\dfrac{1}{2}\ln\frac{1+x}{1-x}\)</td><td>\((-1,1)\)</td><td>\(\dfrac{1}{1-x^2}\)</td></tr>
+      <tr><td>\(\operatorname{arcoth}x\)</td><td>\(\dfrac{1}{2}\ln\frac{x+1}{x-1}\)</td><td>\((-\infty,-1)\cup(1,\infty)\)</td><td>\(\dfrac{1}{1-x^2}\)</td></tr>
+    </tbody>
+  </table>
+  </div>
+</div>
+
+<!-- ═══ REGULI DERIVARE ═══ -->
+<div id="reguli" class="content-section">
+  <h2>Reguli de Derivare</h2>
+  <div class="description">Operații cu funcții derivabile pe un interval \(I\).</div>
+  <div class="fcards">
+    <div class="fcard"><div class="fcard-head">➕ ➖ Operatii Liniare</div><div class="fcard-body">
+      <div class="fline"><span class="fn">\((f\pm g)'=\)</span> \(f'\pm g'\)</div>
+      <div class="fline"><span class="fn">\((c\cdot f)'=\)</span> \(c\cdot f'\)</div>
+    </div></div>
+    <div class="fcard"><div class="fcard-head">✖️ Produs & Cât</div><div class="fcard-body">
+      <div class="fline"><span class="fn">\((f\cdot g)'=\)</span> \(f'g+fg'\)</div>
+      <div class="fline"><span class="fn">\(\left(\dfrac{f}{g}\right)'=\)</span> \(\dfrac{f'g-fg'}{g^2},\ g(x)\neq0\)</div>
+    </div></div>
+    <div class="fcard"><div class="fcard-head">🔗 Lanț (Compunere)</div><div class="fcard-body">
+      <div class="fline"><span class="fn">\((f(g(x)))'=\)</span> \(f'(g(x))\cdot g'(x)\)</div>
+      <div class="fline"><span class="fn">\(\dfrac{dy}{dx}=\)</span> \(\dfrac{dy}{du}\cdot\dfrac{du}{dx}\)</div>
+    </div></div>
+    <div class="fcard"><div class="fcard-head">📐 Parametrică & Inversă</div><div class="fcard-body">
+      <div class="fline"><span class="fn">\(y'(x)=\)</span> \(\dfrac{\dot{y}(t)}{\dot{x}(t)},\ \dot{x}(t)\neq0\)</div>
+      <div class="fline"><span class="fn">\((f^{-1})'(y)=\)</span> \(\dfrac{1}{f'(x)},\ y=f(x)\)</div>
+    </div></div>
+  </div>
+</div>
+<!-- ═══ DERIVATE DE ORDIN SUPERIOR ═══ -->
+<div id="dersup" class="content-section">
+  <h2>Derivate de Ordin Superior</h2>
+  <div class="description">Notarea \(f^{(n)}(x)\) și formule pentru derivate repetitive.</div>
+  <div class="fcards">
+    <div class="fcard"><div class="fcard-head">📐 Regula lui Leibniz</div><div class="fcard-body">
+      <div class="fline"><span class="fn">\((u\cdot v)^{(n)} =\)</span> \(\sum_{k=0}^{n} \binom{n}{k} u^{(k)} v^{(n-k)}\)</div>
+    </div></div>
+    <div class="fcard"><div class="fcard-head">🔁 Formule uzuale</div><div class="fcard-body">
+      <div class="fline"><span class="fn">\((e^x)^{(n)} =\)</span> \(e^x\)</div>
+      <div class="fline"><span class="fn">\((\sin x)^{(n)} =\)</span> \(\sin\!\left(x + \frac{n\pi}{2}\right)\)</div>
+      <div class="fline"><span class="fn">\((\cos x)^{(n)} =\)</span> \(\cos\!\left(x + \frac{n\pi}{2}\right)\)</div>
+      <div class="fline"><span class="fn">\((\ln x)^{(n)} =\)</span> \((-1)^{n-1}\frac{(n-1)!}{x^n},\ n\ge1\)</div>
+      <div class="fline"><span class="fn">\((x^m)^{(n)} =\)</span> \(\frac{m!}{(m-n)!}x^{m-n},\ n\le m\)</div>
+    </div></div>
+  </div>
+</div>
+
+<!-- ═══ SERII TAYLOR ═══ -->
+<div id="taylor" class="content-section">
+  <h2>Serii Taylor & Maclaurin</h2>
+  <div class="description">Dezvoltări în serie de putenzi cu intervale de convergență.</div>
+  <div class="fsec-title">📐 Formula Generală (dezvoltare în \(a\))</div>
+  <div class="fund-box" style="text-align:center; font-size:1.05rem;">
+    \(f(x) = \sum_{n=0}^{\infty} \frac{f^{(n)}(a)}{n!} (x-a)^n = f(a) + f'(a)(x-a) + \frac{f''(a)}{2!}(x-a)^2 + \cdots\)
+  </div>
+  <div class="fsec-title">📊 Dezvoltări Maclaurin uzuale (\(a=0\))</div>
+  <div class="table-wrap">
+  <table>
+    <thead><tr><th>Funcție \(f(x)\)</th><th>Dezvoltare în serie</th><th>Convergență</th></tr></thead>
+    <tbody>
+      <tr><td>\(e^x\)</td><td>\(\displaystyle\sum_{n=0}^\infty \frac{x^n}{n!}\)</td><td>\(x \in \mathbb{R}\)</td></tr>
+      <tr><td>\(\sin x\)</td><td>\(\displaystyle\sum_{n=0}^\infty (-1)^n \frac{x^{2n+1}}{(2n+1)!}\)</td><td>\(x \in \mathbb{R}\)</td></tr>
+      <tr><td>\(\cos x\)</td><td>\(\displaystyle\sum_{n=0}^\infty (-1)^n \frac{x^{2n}}{(2n)!}\)</td><td>\(x \in \mathbb{R}\)</td></tr>
+      <tr><td>\(\frac{1}{1-x}\)</td><td>\(\displaystyle\sum_{n=0}^\infty x^n\)</td><td>\(|x|<1\)</td></tr>
+      <tr><td>\(\ln(1+x)\)</td><td>\(\displaystyle\sum_{n=1}^\infty (-1)^{n+1} \frac{x^n}{n}\)</td><td>\(x \in (-1, 1]\)</td></tr>
+      <tr><td>\((1+x)^\alpha\)</td><td>\(\displaystyle\sum_{n=0}^\infty \binom{\alpha}{n} x^n\)</td><td>\(|x|<1\)</td></tr>
+    </tbody>
+  </table>
+  </div>
+</div>
+
+
+</div> <!-- end container -->
+<script>
+
+// ─── Interfață & MathJax ──────────────────────────────────────
+function openTab(evt, tabName) {
+  document.querySelectorAll('.content-section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.getElementById(tabName).classList.add('active');
+  evt.currentTarget.classList.add('active');
+  if (window.MathJax && MathJax.typesetPromise) MathJax.typesetPromise();
+  // Forțează redesenarea graficului dacă intrăm pe tab
+  if (tabName === 'grafice') { resizeCanvas(); drawGraph(); }
+}
+
+// ─── Canvas Plotter ───────────────────────────────────────────
+const canvas = document.getElementById('plotCanvas');
+const ctx = canvas.getContext('2d');
+const X_MIN = -6, X_MAX = 6;
+const Y_MIN = -6, Y_MAX = 6; // Am mărit intervalul Y pentru a vedea mai bine
+
+function resizeCanvas() {
+  const box = canvas.parentElement;
+  canvas.width = box.clientWidth - 20;
+  canvas.height = 320;
+}
+window.addEventListener('resize', () => { resizeCanvas(); drawGraph(); });
+resizeCanvas();
+
+function toCanvasX(x) { return ((x - X_MIN) / (X_MAX - X_MIN)) * canvas.width; }
+function toCanvasY(y) { return canvas.height - ((y - Y_MIN) / (Y_MAX - Y_MIN)) * canvas.height; }
+
+function drawGraph() {
+  const func = document.getElementById('funcSelect').value;
+  const labelMap = {
+    sin:'\(y=\sin x\)', cos:'\(y=\cos x\)', tan:'\(y=\operatorname{tg}x\)', cot:'\(y=\operatorname{ctg}x\)',
+    exp:'\(y=e^x\)', ln:'\(y=\ln x\)', sqrt:'\(y=\sqrt x\)', abs:'\(y=|x|\)',
+    sinh:'\(y=\sinh x\)', cosh:'\(y=\cosh x\)'
+  };
+  document.getElementById('graphLabel').innerHTML = labelMap[func] || func;
+
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  ctx.fillStyle = '#050605'; ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+  // Grid
+  ctx.strokeStyle = '#1a2b1a'; ctx.lineWidth = 1;
+  for(let i=X_MIN; i<=X_MAX; i++){ ctx.beginPath(); ctx.moveTo(toCanvasX(i),0); ctx.lineTo(toCanvasX(i),canvas.height); ctx.stroke(); }
+  for(let j=Y_MIN; j<=Y_MAX; j++){ ctx.beginPath(); ctx.moveTo(0,toCanvasY(j)); ctx.lineTo(canvas.width,toCanvasY(j)); ctx.stroke(); }
+
+  // Axes
+  ctx.strokeStyle = '#00ff41'; ctx.lineWidth = 2;
+  ctx.beginPath(); ctx.moveTo(0, toCanvasY(0)); ctx.lineTo(canvas.width, toCanvasY(0)); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(toCanvasX(0), 0); ctx.lineTo(toCanvasX(0), canvas.height); ctx.stroke();
+
+  // 🎯 MAPARE EXPLICITĂ (elimină orice ambiguitate)
+  const calcFunc = {
+    sin: Math.sin, cos: Math.cos, tan: Math.tan,
+    cot: x => Math.abs(Math.cos(x)) < 1e-5 ? NaN : 1/Math.tan(x),
+    exp: Math.exp,
+    ln: x => x > 0 ? Math.log(x) : NaN,
+    sqrt: x => x >= 0 ? Math.sqrt(x) : NaN,
+    abs: Math.abs, sinh: Math.sinh, cosh: Math.cosh
+  };
+
+  ctx.strokeStyle = '#00ff41'; ctx.lineWidth = 2; ctx.beginPath();
+  let first = true;
+  const steps = 800;
+
+  for(let i=0; i<=steps; i++){
+    let x = X_MIN + (X_MAX - X_MIN) * (i/steps);
+    let y = calcFunc[func] ? calcFunc[func](x) : NaN;
+
+    // Gestionare asimptote și valori în afara ecranului
+    if(!isFinite(y) || Math.abs(y) > Y_MAX + 10){ first = true; continue; }
+
+    let cy = toCanvasY(y);
+    if(cy < -500 || cy > canvas.height + 500) { first = true; continue; }
+
+    if(first){ ctx.moveTo(toCanvasX(x), cy); first = false; }
+    else ctx.lineTo(toCanvasX(x), cy);
+  }
+  ctx.stroke();
+
+  if (window.MathJax && MathJax.typesetPromise) MathJax.typesetPromise([document.getElementById('graphLabel')]);
+
+}
+drawGraph();
+// Forțează MathJax să se redeseneze imediat înainte de printare/PDF
+window.addEventListener('beforeprint', () => {
+  if (window.MathJax && MathJax.typesetPromise) {
+    MathJax.typesetPromise();
+  }
+});
+</script>
+</body>
+</html>
+

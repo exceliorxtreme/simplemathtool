@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Math Suite — Hub</title>
+<script>
+window.MathJax = {
+  chtml: { scale: 1.15 },
+  tex: { inlineMath: [['$', '$'], ['\\(', '\\)']], displayMath: [['$$', '$$'], ['\\[', '\\]']] },
+  options: { skipHtmlTags: ['script', 'noscript', 'style', 'textarea', 'pre'] }
+};
+</script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js" async></script>
+<style>
+:root { --bg:#0a0c0a; --card-bg:#111411; --text:#e0ffe0; --text-muted:#7caa7c; --accent:#00ff41; --accent-dark:#008f25; --accent-glow:rgba(0,255,65,0.25); --border:#2a332a; --font-main:'Consolas','Fira Code','Segoe UI',monospace; }
+*{box-sizing:border-box} body{font-family:var(--font-main);background:var(--bg);color:var(--text);display:flex;justify-content:center;align-items:flex-start;min-height:100vh;margin:0;padding:30px 10px;background-image:radial-gradient(var(--border) 1px,transparent 1px);background-size:20px 20px}
+.container{background:var(--card-bg);padding:2rem;border-radius:12px;box-shadow:0 0 25px var(--accent-glow),0 10px 40px rgba(0,0,0,0.7);width:100%;max-width:700px;border:1px solid var(--accent-dark)}
+.header{display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--border);padding-bottom:15px;margin-bottom:20px} h2{color:var(--accent);margin:0;text-shadow:0 0 8px var(--accent-glow)} select{background:#0d100d;color:var(--text);border:1px solid #3a453a;padding:6px 10px;border-radius:6px;font-family:inherit;cursor:pointer} select:focus{outline:none;border-color:var(--accent)}
+.card-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:20px;margin-top:20px}
+.card{background:var(--card-bg);border:1px solid var(--border);border-radius:10px;padding:20px;text-decoration:none;color:var(--text);transition:0.3s;display:block}
+.card:hover{transform:translateY(-4px);box-shadow:0 8px 25px var(--accent-glow);border-color:var(--accent)}
+.card h3{color:var(--accent);margin:0 0 8px;font-size:1.1rem} .card p{color:var(--text-muted);margin:0;font-size:0.9rem;line-height:1.5}
+.footer{text-align:center;margin-top:30px;padding-top:15px;border-top:1px solid var(--border);color:var(--text-muted);font-size:0.8rem}
+</style>
+</head>
+<body>
+<div class="container">
+  <div class="header">
+    <h2 data-i18n="home">🏠 Acasă</h2>
+    <select id="langSelect">
+      <option value="ro">🇷🇴 RO</option><option value="en">🇬🇧 EN</option><option value="fr">🇫🇷 FR</option>
+      <option value="de">🇩🇪 DE</option><option value="es">🇪🇸 ES</option><option value="it">🇮🇹 IT</option>
+      <option value="pt">🇵🇹 PT</option><option value="zh">🇨🇳 ZH</option>
+    </select>
+  </div>
+  <div class="card-grid">
+    <a href="algebra.html" class="card">
+      <h3 data-i18n="alg_title">🧮 Algebră & Calcul</h3>
+      <p data-i18n="alg_desc">Exponențiere modulară, fracții, combinări, numere prime, triplete pitagorice, tabele & formule trigonometrice.</p>
+    </a>
+    <a href="analiza.html" class="card">
+      <h3 data-i18n="ana_title">📈 Analiză Matematică</h3>
+      <p data-i18n="ana_desc">Derivate, integrale, grafice interactive, funcții inverse, hiperbolice, serii Taylor și reguli de derivare.</p>
+    </a>
+  </div>
+  <div class="footer" data-i18n="footer">Construit cu ❤️ · MathJax 3 · Dark Terminal UI</div>
+</div>
+<script>
+const I18N={ro:{home:"🏠 Acasă",alg_title:"🧮 Algebră & Calcul",alg_desc:"Exponențiere modulară, fracții, combinări, numere prime, triplete pitagorice, tabele & formule trigonometrice.",ana_title:"📈 Analiză Matematică",ana_desc:"Derivate, integrale, grafice interactive, funcții inverse, hiperbolice, serii Taylor și reguli de derivare.",footer:"Construit cu ❤️ · MathJax 3 · Dark Terminal UI"},en:{home:"🏠 Home",alg_title:"🧮 Algebra & Computation",alg_desc:"Modular exponentiation, fractions, combinations, primes, Pythagorean triples, trig tables & formulas.",ana_title:"📈 Mathematical Analysis",ana_desc:"Derivatives, integrals, interactive graphs, inverse & hyperbolic functions, Taylor series.",footer:"Built with ❤️ · MathJax 3 · Dark Terminal UI"},fr:{home:"🏠 Accueil",alg_title:"🧮 Algèbre & Calcul",alg_desc:"Exponentiation modulaire, fractions, combinaisons, nombres premiers, triples pythagoriciens, trigonométrie.",ana_title:"📈 Analyse Mathématique",ana_desc:"Dérivées, intégrales, graphiques interactifs, fonctions inverses & hyperboliques, séries de Taylor.",footer:"Créé avec ❤️ · MathJax 3 · Dark Terminal UI"},de:{home:"🏠 Startseite",alg_title:"🧮 Algebra & Rechnen",alg_desc:"Modulare Potenzierung, Brüche, Kombinationen, Primzahlen, pythagoreische Tripel, Trigonometrie.",ana_title:"📈 Mathematische Analysis",ana_desc:"Ableitungen, Integrale, interaktive Graphen, inverse & hyperbolische Funktionen, Taylor-Reihen.",footer:"Erstellt mit ❤️ · MathJax 3 · Dark Terminal UI"},es:{home:"🏠 Inicio",alg_title:"🧮 Álgebra y Cálculo",alg_desc:"Exponenciación modular, fracciones, combinatoria, primos, ternas pitagóricas, trigonometría.",ana_title:"📈 Análisis Matemático",ana_desc:"Derivadas, integrales, gráficas interactivas, funciones inversas e hiperbólicas, series de Taylor.",footer:"Hecho con ❤️ · MathJax 3 · Dark Terminal UI"},it:{home:"🏠 Home",alg_title:"🧮 Algebra e Calcolo",alg_desc:"Esponenziazione modulare, frazioni, combinatoria, numeri primi, terne pitagoriche, trigonometria.",ana_title:"📈 Analisi Matematica",ana_desc:"Derivate, integrali, grafici interattivi, funzioni inverse e iperboliche, serie di Taylor.",footer:"Creato con ❤️ · MathJax 3 · Dark Terminal UI"},pt:{home:"🏠 Início",alg_title:"🧮 Álgebra e Cálculo",alg_desc:"Exponenciação modular, frações, combinatória, números primos, ternas pitagóricas, trigonometria.",ana_title:"📈 Análise Matemática",ana_desc:"Derivadas, integrais, gráficos interativos, funções inversas e hiperbólicas, séries de Taylor.",footer:"Feito com ❤️ · MathJax 3 · Dark Terminal UI"},zh:{home:"🏠 首页",alg_title:"🧮 代数与计算",alg_desc:"模幂运算、分数、组合数、素数、勾股数、三角函数表与公式。",ana_title:"📈 数学分析",ana_desc:"导数、积分、交互式图形、反函数与双曲函数、泰勒级数。",footer:"用心构建 ❤️ · MathJax 3 · 终端暗色界面"}};
+function applyLang(lang){if(!I18N[lang])lang='ro';localStorage.setItem('calc_lang',lang);document.documentElement.lang=lang;document.querySelectorAll('[data-i18n]').forEach(el=>{const k=el.getAttribute('data-i18n');if(I18N[lang][k])el.textContent=I18N[lang][k]});const s=document.getElementById('langSelect');if(s)s.value=lang}
+document.addEventListener('DOMContentLoaded',()=>{applyLang(localStorage.getItem('calc_lang')||'ro');document.getElementById('langSelect')?.addEventListener('change',e=>applyLang(e.target.value))});
+</script>
+</body>
+</html>
