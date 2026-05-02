@@ -1,4 +1,4 @@
-
+https://exceliorxtreme.github.io/simplemathtool/
 ## ✨ Funcționalități
 ### 🔢 Algebră & Teoria Numerelor (`algebra.html`)
 - Exponențiere modulară & invers modular (`BigInt`)
