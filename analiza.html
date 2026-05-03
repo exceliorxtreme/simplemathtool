@@ -35,6 +35,9 @@ body {
   box-shadow: 0 0 25px var(--accent-glow), 0 10px 40px rgba(0,0,0,0.7);
   width: 100%; max-width: 720px; border: 1px solid var(--accent-dark);
 }
+.lang-switch{text-align:right;padding:8px 20px 0;font-size:0.85rem;border-bottom:1px solid var(--border);margin-bottom:10px}
+.lang-switch a{color:#7caa7c;text-decoration:none;padding:4px 8px;transition:0.2s}
+.lang-switch a:hover,.lang-switch a.active{color:#00ff41;font-weight:bold}
 /* ── TABS ── */
 .tabs { display: flex; margin-bottom: 20px; border-bottom: 2px solid var(--border); flex-wrap: wrap; gap: 2px; }
 .tab {
@@ -138,6 +141,8 @@ tbody td { padding: 7px 10px; text-align: center; border-bottom: 1px solid var(-
 <body>
 
 <div class="container">
+<div class="lang-switch">
+  <a href="analiza.html">🇷🇴 RO</a> | <a href="analiza_en.html" class="active">🇬🇧 EN</a></div>
 <nav style="background:var(--card-bg);padding:10px 20px;border-bottom:1px solid var(--border);display:flex;gap:15px;align-items:center;font-size:0.85rem;">
   <a href="index.html" style="color:var(--accent);text-decoration:none;font-weight:bold;">🏠 Acasă</a>
   <span style="color:var(--text-muted)">|</span>
