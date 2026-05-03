@@ -17,6 +17,8 @@ window.MathJax = {
 *{box-sizing:border-box} body{font-family:var(--font-main);background:var(--bg);color:var(--text);display:flex;justify-content:center;align-items:flex-start;min-height:100vh;margin:0;padding:30px 10px;background-image:radial-gradient(var(--border) 1px,transparent 1px);background-size:20px 20px}
 .container{background:var(--card-bg);padding:2rem;border-radius:12px;box-shadow:0 0 25px var(--accent-glow),0 10px 40px rgba(0,0,0,0.7);width:100%;max-width:700px;border:1px solid var(--accent-dark)}
 .header{display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--border);padding-bottom:15px;margin-bottom:20px} h2{color:var(--accent);margin:0;text-shadow:0 0 8px var(--accent-glow)} select{background:#0d100d;color:var(--text);border:1px solid #3a453a;padding:6px 10px;border-radius:6px;font-family:inherit;cursor:pointer} select:focus{outline:none;border-color:var(--accent)}
+.lang-switch a{color:#7caa7c;text-decoration:none;padding:4px 8px;transition:0.2s}
+.lang-switch a:hover,.lang-switch a.active{color:#00ff41;font-weight:bold}
 .card-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:20px;margin-top:20px}
 .card{background:var(--card-bg);border:1px solid var(--border);border-radius:10px;padding:20px;text-decoration:none;color:var(--text);transition:0.3s;display:block}
 .card:hover{transform:translateY(-4px);box-shadow:0 8px 25px var(--accent-glow);border-color:var(--accent)}
@@ -28,8 +30,11 @@ window.MathJax = {
 <div class="container">
   <div class="header">
     <h2 data-i18n="home">🏠 Acasă</h2>
-
+<div class="lang-switch">
+      <a href="index.html">🇷🇴 RO</a> | <a href="index_en.html" class="active">🇬🇧 EN</a>
+    </div>
   </div>
+
   <div class="card-grid">
     <a href="algebra.html" class="card">
       <h3 data-i18n="alg_title">🧮 Algebră & Calcul</h3>
