@@ -451,25 +451,28 @@ function calcNumTheory() {
   const n = Number(val);
   if(n>1e14) return showResult("Number too large. Max 10¹⁴.", true);
 
-  let temp=n, factors=[];
-  for(let p=2; p*p<=temp; p++) {
-    if(temp%p===0) {
-      let count=0;
-      while(temp%p===0) { temp/=p; count++; }
-      factors.push({p, count});
+   let temp = n, factors = [];
+    for (let p = 2; p * p <= temp; p++) {
+        if (temp % p === 0) {
+            let count = 0;
+            while (temp % p === 0) { temp /= p; count++; }
+            factors.push({p, count});
+        }
     }
-  }
-  if(temp>1) factors.push({p:temp, count:1});
+    if (temp > 1) factors.push({p: temp, count: 1});
 
-  let d_val=1, sigma_val=1n, phi_val=BigInt(n);
-  let factorStr = factors.length ? factors.map(f => `${f.p}^{${f.count}}`).join(' \\times ') : "1";
+    let d_val = 1;
+    let sigma_val = 1n;
+    let phi_val = BigInt(n);
+    let factorStr = factors.length ? factors.map(f => `${f.p}^{${f.count}}`).join(' \\times ') : "1";
 
-  for(let f of factors) {
-    let p=BigInt(f.p), a=f.count;
-    d_val *= (a+1);
-    sigma_val *= (p ** BigInt(a+1) - 1n) / (p - 1n);
-    phi_val *= (p-1n) / p;
-  }
+    for (let f of factors) {
+        let p = BigInt(f.p);
+        let a = f.count;
+        d_val *= (a + 1);
+        sigma_val = sigma_val * ((p ** BigInt(a + 1) - 1n) / (p - 1n));
+        phi_val = phi_val * (p - 1n) / p;
+    }
   if(n===1) { d_val=1; sigma_val=1n; phi_val=1n; factorStr="1"; }
 
   const out = `<div style="text-align:left;line-height:1.85;font-size:0.95rem;padding:5px 0;">
