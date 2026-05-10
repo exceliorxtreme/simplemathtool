@@ -1,7 +1,6 @@
 https://exceliorxtreme.github.io/simplemathtool/
 
-## https://exceliorxtreme.github.io/math-hub/ 
-## varianta următoare -reconstruit in module js pentru extindere cu noi funcționalități
+
 ## ✨ Funcționalități
 ### 🔢 Algebră & Teoria Numerelor (`algebra.html`)
 - Exponențiere modulară & invers modular (`BigInt`)
@@ -59,3 +58,5 @@ Distribuit sub **MIT License**. Poți folosi, modifica și distribui codul în s
 
 ---
 ✨ *Construit pentru rapiditate, precizie și claritate matematică. Optimizat pentru studenți, profesori și pasionați.*
+## https://exceliorxtreme.github.io/math-hub/ 
+## varianta următoare -reconstruit in module js pentru extindere cu noi funcționalități
