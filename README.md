@@ -1,7 +1,7 @@
 https://exceliorxtreme.github.io/simplemathtool/
 
 ## https://exceliorxtreme.github.io/math-hub/ 
-## next variation-reconstruit in module js pentru sclabilitate, noi module edaugate
+## varianta următoare -reconstruit in module js pentru extindere cu noi funcțiuonalități
 ## ✨ Funcționalități
 ### 🔢 Algebră & Teoria Numerelor (`algebra.html`)
 - Exponențiere modulară & invers modular (`BigInt`)
